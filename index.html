@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calcule facilmente a probabilidade de comprar as cartas que você precisa na sua mão inicial de Yu-Gi-Oh!. Ferramenta de análise de deck para duelistas.">
+    <meta name="keywords" content="Yu-Gi-Oh!, YGO, probability, calculator, deck, analysis, hypergeometric, yugioh deck builder, stats">
+    <meta name="author" content="Iago Borelli">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Probabilidade Yu-Gi-Oh!">
+    <meta property="og:description" content="Calcule a chance de comprar suas cartas mais importantes na mão inicial de Yu-Gi-Oh!.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ygoprobability.github.io/">
+    <meta property="og:image" content="https://ygoprobability.github.io/imagem-preview.png">
+    <meta name="theme-color" content="#1a2233">
+
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="icon" href="public/assets/icon.jpg" type="image/x-icon">
+    <title>Probabilidade Yu-Gi-Oh!</title>
+</head>
+<body>
+
+    <div class="container my-4 my-md-5">
+        
+        <header class="text-center mb-5 fade-in-up">
+            <h1 class="display-5 fw-bold text-primary">Probabilidade Yu-Gi-Oh!</h1>
+            <p class="text-body-secondary fs-5">Calcule a chance de comprar suas cartas mais importantes na mão inicial.</p>
+        </header>
+
+        <main class="row g-4">
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="card-header">
+                        <h4 class="my-1">Parâmetros do Deck</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="probabilityForm" class="d-grid gap-3">
+                            <div>
+                                <label for="deckSize" class="form-label">Tamanho do Deck</label>
+                                <input type="number" id="deckSize" value="40" min="1" max="60" class="form-control form-control-lg">
+                            </div>
+
+                            <div>
+                                <label for="handSize" class="form-label">Tamanho da Mão Inicial</label>
+                                <input type="number" id="handSize" value="5" min="1"  class="form-control form-control-lg">
+                            </div>
+                            
+                            <div>
+                                <label for="cardCount" class="form-label">Cópias da Carta no Deck </label>
+                                <input type="number" id="cardCount" value="3" min="1"  class="form-control form-control-lg">
+                            </div>
+
+                            <div>
+                                <label class="form-label">Cópias Desejadas na Mão </label>
+                                <div class="input-group">
+                                    <input type="number" id="minCopies" value="1" min="0"  class="form-control form-control-lg" aria-label="Mínimo">
+                                    <span class="input-group-text">a</span>
+                                    <input type="number" id="maxCopies" value="3" min="0"  class="form-control form-control-lg" aria-label="Máximo">
+                                </div>
+                            </div>
+
+                            <button type="submit" id="calculateBtn" class="btn btn-primary btn-lg w-100 mt-3 fw-bold d-flex align-items-center justify-content-center" style="min-height: 50px;">
+                                <span class="btn-text">⚙️ Calcular Probabilidade</span>
+                                <div class="spinner-border spinner-border-sm d-none" role="status">
+                                    <span class="visually-hidden">Calculando...</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="d-grid gap-4">
+                    <div class="card shadow-sm fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="card-body p-2">
+                             <div id="result" class="text-center fs-4 fw-bold p-3 rounded-2 transition-background">
+                                Insira os dados e calcule.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm fade-in-up" style="animation-delay: 0.3s;">
+                         <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <h5 class="text-center mb-3 text-body-secondary">Comprar vs. Não Comprar</h5>
+                                    <div style="position: relative; height:250px">
+                                        <canvas id="overallChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="text-center mb-3 text-body-secondary">Detalhes por Cópia</h5>
+                                     <div style="position: relative; height:250px">
+                                        <canvas id="copiesChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-5 pt-4 border-top border-secondary-subtle text-center text-body-secondary fade-in-up" style="animation-delay: 0.4s;">
+            <p>&copy; 2025 | Desenvolvido por Iago Borelli. Todos os direitos reservados.</p>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="public/js/script.js"></script>
+</body>
+</html>
